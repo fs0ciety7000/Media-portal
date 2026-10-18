@@ -2,10 +2,13 @@ services:
   portal:
     build: .
     expose:
-      - "80"
+      - "3000"
+    environment:
+      PORT: "3000"
+      JELLYFIN_URL: ${JELLYFIN_URL:-https://jf.phantomhex.cc}
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://127.0.0.1/"]
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/health').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"]
       interval: 30s
       timeout: 3s
       retries: 3

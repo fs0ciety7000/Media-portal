@@ -1,10 +1,12 @@
-FROM nginx:stable-alpine
+FROM node:24-alpine
 
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-COPY index.html styles.css app.js /usr/share/nginx/html/
-COPY assets /usr/share/nginx/html/assets
+ENV NODE_ENV=production PORT=3000
+WORKDIR /app
 
-EXPOSE 80
+COPY server.mjs ./server.mjs
+COPY index.html login.html styles.css app.js login.js ./
+COPY assets ./assets
 
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD wget --quiet --tries=1 --spider http://127.0.0.1/ || exit 1
+EXPOSE 3000
+USER node
+CMD ["node", "server.mjs"]

@@ -6,6 +6,28 @@ const searchInput = document.querySelector('#service-query');
 const searchClear = document.querySelector('#search-clear');
 const searchEmpty = document.querySelector('#search-empty');
 const services = [...document.querySelectorAll('.service-row')];
+const accountName = document.querySelector('#account-name');
+const logoutButton = document.querySelector('#logout-button');
+
+async function initializePortal() {
+  try {
+    const response = await fetch('/api/session', { credentials: 'same-origin', cache: 'no-store' });
+    if (!response.ok) return window.location.replace('/login');
+    const session = await response.json();
+    accountName.textContent = session.username;
+  } catch {
+    window.location.replace('/login');
+  }
+}
+
+logoutButton.addEventListener('click', async () => {
+  logoutButton.disabled = true;
+  try {
+    await fetch('/api/logout', { method: 'POST', credentials: 'same-origin' });
+  } finally {
+    window.location.replace('/login');
+  }
+});
 
 function updateClock() {
   const now = new Date();
@@ -38,3 +60,4 @@ searchClear.addEventListener('click', () => {
 });
 updateClock();
 window.setInterval(updateClock, 30_000);
+initializePortal();

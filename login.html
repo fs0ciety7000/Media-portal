@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#101312" />
+    <meta name="description" content="Connexion privée au portail média Phant0mhex." />
+    <title>Connexion · Phant0mhex</title>
+    <link rel="icon" href="/assets/phantomhex-mark.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/styles.css" />
+    <script src="/login.js" defer></script>
+  </head>
+  <body class="login-page">
+    <main class="login-shell">
+      <a class="login-brand" href="/" aria-label="Phant0mhex, connexion">
+        <img src="/assets/phantomhex-mark.svg" alt="" width="48" height="48" />
+        <span><strong>PHANT<span>0</span>MHEX</strong><small>PORTAIL MÉDIAS PRIVÉ</small></span>
+      </a>
+      <section class="login-content" aria-labelledby="login-title">
+        <div class="login-copy">
+          <span class="login-overline">ACCÈS MEMBRE · AUTHENTIFICATION JELLYFIN</span>
+          <h1 id="login-title">Votre cinéma<br /><em>vous attend.</em></h1>
+          <p>Connectez-vous avec le même identifiant et mot de passe que sur Jellyfin.</p>
+        </div>
+        <form id="login-form" class="login-form" novalidate>
+          <label for="username">Nom d’utilisateur Jellyfin</label>
+          <input id="username" name="username" type="text" autocomplete="username" autocapitalize="none" maxlength="128" required />
+          <label for="password">Mot de passe</label>
+          <input id="password" name="password" type="password" autocomplete="current-password" maxlength="1024" required />
+          <p id="login-error" class="login-error" role="alert" aria-live="polite" hidden></p>
+          <button id="login-submit" class="button button-primary login-submit" type="submit">
+            <span>Entrer dans l’antre</span>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 12h14m-6-6 6 6-6 6" /></svg>
+          </button>
+          <p class="login-privacy">Le mot de passe est vérifié par Jellyfin et n’est pas conservé par le portail.</p>
+        </form>
+      </section>
+      <div class="login-foot"><span>PHX<span>_</span></span><span>ESPACE RÉSERVÉ AUX COMPTES JELLYFIN</span></div>
+    </main>
+  </body>
+</html>

@@ -8,7 +8,7 @@ web
 
 ## Stack
 
-static HTML/CSS/JS, served by a small Docker image for Coolify. The user selected this stack; the dashboard primarily links to external media services.
+Lightweight Node.js HTTP server serving HTML/CSS/JS in Docker on Coolify. Jellyfin authenticates portal logins; the server keeps short-lived session tokens in memory and serves the dashboard only to authenticated members.
 
 ## Users
 
@@ -28,7 +28,7 @@ Used in a browser on household screens, including television-sized displays. The
 
 ## Capabilities and Constraints
 
-The initial surface is a dashboard of service links and useful widgets. Jellyfin receives a companion custom CSS theme. Portal deployment is intended for Coolify at `portal.phantomhex.cc`, in Docker. Wizarr is intended for a separate Coolify deployment at `lock.phantomhex.cc`. Connectivity, service health, and authentication are not confirmed; do not present them as live facts.
+The portal requires a Jellyfin account before showing the dashboard. Sign-in is checked by Jellyfin's `Users/AuthenticateByName` endpoint; credentials are not stored by the portal, and no admin API key is needed for member authentication. Sessions are in memory and expire after 12 hours. Service links continue to open independently. Jellyfin receives a companion custom CSS theme. Portal deployment is intended for Coolify at `portal.phantomhex.cc`, in Docker. Wizarr is a separate Coolify deployment at `lock.phantomhex.cc`.
 
 ## Brand Commitments
 

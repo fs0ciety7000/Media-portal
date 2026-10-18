@@ -1,6 +1,16 @@
 # L’antre de Phant0mhex
 
-Portail média statique pour le foyer, servi par Nginx. Le contenu n’appelle aucune API et n’affirme pas que les services sont en ligne : chaque raccourci ouvre le service correspondant dans un nouvel onglet.
+Portail média privé pour le foyer. Le serveur Node.js vérifie les connexions avec Jellyfin avant de servir le tableau de bord. Les raccourcis s’ouvrent dans un nouvel onglet.
+
+## Connexion privée
+
+- Les comptes et mots de passe sont ceux de Jellyfin. Le portail n’a pas de table d’utilisateurs à maintenir.
+- Le navigateur transmet le mot de passe au portail sur HTTPS; le serveur le vérifie ensuite auprès de Jellyfin via `Users/AuthenticateByName`. Il n’est pas conservé.
+- Le jeton de session Jellyfin reste en mémoire côté serveur, derrière un cookie `HttpOnly`, `Secure` et `SameSite=Lax`. Les sessions expirent après 12 heures et sont révoquées au redémarrage du conteneur.
+- Huit tentatives de connexion maximum par adresse sur 15 minutes. Seuls les journaux de démarrage sont écrits; les identifiants et jetons ne sont pas journalisés.
+- Aucun endpoint du portail ne renvoie l’API key Jellyfin au navigateur. L’API key Jellyfin n’est pas nécessaire pour vérifier un compte membre.
+
+N’exposez aucune clé API dans le dépôt ou le navigateur; révoquez toute clé API divulguée.
 
 ## Services
 
@@ -15,10 +25,11 @@ L’horloge suit le fuseau horaire du navigateur. La recherche filtre les trois 
 
 1. Connecter ce dépôt comme application Docker Compose.
 2. Utiliser `compose.yaml` à la racine.
-3. Définir le domaine public de `portal` sur `https://portal.phantomhex.cc`, port interne `80`.
-4. Déployer. Le service Nginx ne publie pas directement de port sur l’hôte.
+3. Définir le domaine public de `portal` sur `https://portal.phantomhex.cc`, port interne `3000`.
+4. Conserver `JELLYFIN_URL=https://jf.phantomhex.cc` dans l’environnement de production.
+5. Déployer. Coolify termine TLS; le conteneur n’expose qu’un port interne.
 
-Pour le développement local : lancer `python3 -m http.server 8080` depuis la racine du dépôt et ouvrir `http://localhost:8080`.
+Pour développer localement, lancer `JELLYFIN_URL=https://jf.phantomhex.cc node server.mjs` puis ouvrir `http://localhost:3000`. Le cookie `Secure` est activé dans l’image de production HTTPS; en local, utilise un proxy HTTPS ou adapte le cookie à l’environnement de développement.
 
 ## Déployer Wizarr dans Coolify
 
