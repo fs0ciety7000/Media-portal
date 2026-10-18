@@ -40,7 +40,9 @@ services:
       WIZARR_IMAGE_VERSION: ${WIZARR_IMAGE_VERSION:-latest}
       DB_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in Coolify before deployment}
       DB_USERNAME: ${DB_USERNAME:-postgres}
-      DB_HOST: ${DB_HOST:-wizarr_postgres}
+      # Coolify assigns its own unique container name; the Compose service
+      # alias remains stable and is resolvable across the project network.
+      DB_HOST: ${DB_HOST:-postgres}
       DB_NAME: ${DB_NAME:-wizarr}
       REDIS_HOST: ${REDIS_HOST:-redis}
       REDIS_PORT: ${REDIS_PORT:-6379}
