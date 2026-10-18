@@ -5,7 +5,10 @@ name: wizarr
 # the lock.phantomhex.cc domain in Coolify's Public Port configuration.
 services:
   wizarr-nginx:
-    image: nginx:1.24.0-alpine
+    image: phantomhex-wizarr-nginx:latest
+    build:
+      context: .
+      dockerfile: wizarr/Dockerfile.nginx
     restart: on-failure
     depends_on:
       wizarr-frontend:
@@ -18,8 +21,6 @@ services:
       PORT: "5690"
       FRONT_URL: http://wizarr-frontend:5173
       SERVER_URL: http://wizarr-backend:5001
-    volumes:
-      - ./wizarr/nginx.conf.template:/etc/nginx/templates/wizarr.conf.template:ro
 
   wizarr-frontend:
     container_name: wizarr_frontend
