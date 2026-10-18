@@ -19,7 +19,7 @@ services:
       FRONT_URL: http://wizarr-frontend:5173
       SERVER_URL: http://wizarr-backend:5001
     volumes:
-      - ./nginx.conf.template:/etc/nginx/templates/wizarr.conf.template:ro
+      - ./wizarr/nginx.conf.template:/etc/nginx/templates/wizarr.conf.template:ro
 
   wizarr-frontend:
     container_name: wizarr_frontend
