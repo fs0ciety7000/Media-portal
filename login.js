@@ -4,6 +4,21 @@ const password = document.querySelector('#password');
 const submit = document.querySelector('#login-submit');
 const error = document.querySelector('#login-error');
 
+const fallbackErrors = {
+  invalid: 'Renseignez un identifiant et un mot de passe Jellyfin valides.',
+  credentials: 'Identifiants Jellyfin invalides ou compte indisponible.',
+  unavailable: 'Le service de connexion est temporairement indisponible. Réessayez dans un instant.',
+  'rate-limit': 'Trop de tentatives. Patientez 15 minutes avant de réessayer.',
+  request: 'Requête refusée. Rechargez la page et réessayez.',
+};
+
+const fallbackError = new URLSearchParams(window.location.search).get('error');
+if (fallbackError && fallbackErrors[fallbackError]) {
+  error.textContent = fallbackErrors[fallbackError];
+  error.hidden = false;
+  window.history.replaceState(null, '', '/login');
+}
+
 async function checkExistingSession() {
   try {
     const response = await fetch('/api/session', { credentials: 'same-origin', cache: 'no-store' });

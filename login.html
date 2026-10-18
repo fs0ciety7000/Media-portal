@@ -22,7 +22,7 @@
           <h1 id="login-title">Votre cinéma<br /><em>vous attend.</em></h1>
           <p>Connectez-vous avec le même identifiant et mot de passe que sur Jellyfin.</p>
         </div>
-        <form id="login-form" class="login-form" novalidate>
+        <form id="login-form" class="login-form" method="post" action="/api/login" novalidate>
           <label for="username">Nom d’utilisateur Jellyfin</label>
           <input id="username" name="username" type="text" autocomplete="username" autocapitalize="none" maxlength="128" required />
           <label for="password">Mot de passe</label>

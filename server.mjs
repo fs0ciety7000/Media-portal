@@ -23,7 +23,7 @@ const mimeTypes = {
 function setSecurityHeaders(res) {
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('X-Frame-Options', 'DENY');
-  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.setHeader('Referrer-Policy', 'no-referrer');
   res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
   res.setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; form-action 'self'; base-uri 'self'");
   res.setHeader('Strict-Transport-Security', 'max-age=31536000');
@@ -76,6 +76,27 @@ async function readJson(req, maxBytes = 4096) {
   return JSON.parse(raw || '{}');
 }
 
+async function readLoginBody(req) {
+  const contentType = (req.headers['content-type'] || '').split(';', 1)[0].trim().toLowerCase();
+  let raw = '';
+  for await (const chunk of req) {
+    raw += chunk;
+    if (Buffer.byteLength(raw) > 4096) throw new Error('body-too-large');
+  }
+  if (contentType === 'application/json') return { body: JSON.parse(raw || '{}'), formSubmission: false };
+  if (contentType === 'application/x-www-form-urlencoded') {
+    return { body: Object.fromEntries(new URLSearchParams(raw)), formSubmission: true };
+  }
+  throw new Error('unsupported-content-type');
+}
+
+function loginError(res, formSubmission, status, code, message) {
+  if (formSubmission) {
+    return res.writeHead(303, { Location: `/login?error=${encodeURIComponent(code)}`, 'Cache-Control': 'no-store' }).end();
+  }
+  return sendJson(res, status, { error: message });
+}
+
 function allowLoginAttempt(address) {
   const now = Date.now();
   const current = attempts.get(address);
@@ -117,21 +138,29 @@ const server = createServer(async (req, res) => {
     return sendJson(res, 200, { status: 'ok' });
   }
 
+  // Strip legacy/native-GET credentials from the address bar and referrer chain.
+  if (req.method === 'GET' && ['/', '/login'].includes(url.pathname) && (url.searchParams.has('username') || url.searchParams.has('password'))) {
+    return res.writeHead(303, { Location: url.pathname, 'Cache-Control': 'no-store' }).end();
+  }
+
   if (req.method === 'POST' && url.pathname === '/api/login') {
-    if (!originIsSameSite(req)) return sendJson(res, 403, { error: 'Requête refusée. Rechargez la page et réessayez.' });
+    const formSubmission = (req.headers['content-type'] || '').toLowerCase().startsWith('application/x-www-form-urlencoded');
+    if (!originIsSameSite(req)) return loginError(res, formSubmission, 403, 'request', 'Requête refusée. Rechargez la page et réessayez.');
     const address = clientAddress(req);
-    if (!allowLoginAttempt(address)) return sendJson(res, 429, { error: 'Trop de tentatives. Patientez 15 minutes avant de réessayer.' });
+    if (!allowLoginAttempt(address)) return loginError(res, formSubmission, 429, 'rate-limit', 'Trop de tentatives. Patientez 15 minutes avant de réessayer.');
     let username;
     let password;
+    let isFormSubmission;
     try {
-      const body = await readJson(req);
+      const { body, formSubmission: isForm } = await readLoginBody(req);
+      isFormSubmission = isForm;
       username = typeof body.username === 'string' ? body.username.trim() : '';
       password = typeof body.password === 'string' ? body.password : '';
     } catch {
-      return sendJson(res, 400, { error: 'Formulaire invalide.' });
+      return loginError(res, formSubmission, 400, 'invalid', 'Formulaire invalide.');
     }
     if (!username || !password || username.length > 128 || password.length > 1024) {
-      return sendJson(res, 400, { error: 'Saisissez votre identifiant et votre mot de passe Jellyfin.' });
+      return loginError(res, isFormSubmission, 400, 'invalid', 'Saisissez votre identifiant et votre mot de passe Jellyfin.');
     }
 
     const deviceId = randomBytes(12).toString('hex');
@@ -146,15 +175,14 @@ const server = createServer(async (req, res) => {
         signal: AbortSignal.timeout(10_000),
       });
       if (!authResponse.ok) {
-        return sendJson(res, authResponse.status === 401 || authResponse.status === 403 ? 401 : 503, {
-          error: authResponse.status === 401 || authResponse.status === 403
-            ? 'Identifiants Jellyfin invalides ou compte indisponible.'
-            : 'Jellyfin ne peut pas terminer la connexion. Réessayez dans un instant.',
-        });
+        const invalidCredentials = authResponse.status === 401 || authResponse.status === 403;
+        return loginError(res, isFormSubmission, invalidCredentials ? 401 : 503,
+          invalidCredentials ? 'credentials' : 'unavailable',
+          invalidCredentials ? 'Identifiants Jellyfin invalides ou compte indisponible.' : 'Jellyfin ne peut pas terminer la connexion. Réessayez dans un instant.');
       }
       const auth = await authResponse.json();
       if (!auth.AccessToken || !auth.User?.Id || !auth.User?.Name) {
-        return sendJson(res, 503, { error: 'Réponse Jellyfin inattendue. Réessayez dans un instant.' });
+        return loginError(res, isFormSubmission, 503, 'unavailable', 'Réponse Jellyfin inattendue. Réessayez dans un instant.');
       }
       const id = randomBytes(32).toString('base64url');
       sessions.set(id, {
@@ -164,11 +192,13 @@ const server = createServer(async (req, res) => {
         expiresAt: Date.now() + sessionTtlMs,
       });
       attempts.delete(address);
+      const cookie = `phx_session=${id}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=${Math.floor(sessionTtlMs / 1000)}`;
+      if (isFormSubmission) return res.writeHead(303, { Location: '/', 'Cache-Control': 'no-store', 'Set-Cookie': cookie }).end();
       return sendJson(res, 200, { ok: true, username: auth.User.Name }, {
-        'Set-Cookie': `phx_session=${id}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=${Math.floor(sessionTtlMs / 1000)}`,
+        'Set-Cookie': cookie,
       });
     } catch {
-      return sendJson(res, 503, { error: 'Impossible de joindre Jellyfin. Vérifiez sa disponibilité puis réessayez.' });
+      return loginError(res, isFormSubmission, 503, 'unavailable', 'Impossible de joindre Jellyfin. Vérifiez sa disponibilité puis réessayez.');
     } finally {
       password = '';
     }
@@ -191,10 +221,11 @@ const server = createServer(async (req, res) => {
   if (req.method === 'GET' && url.pathname === '/login') {
     return serveFile(res, session ? 'index.html' : 'login.html', true);
   }
-  if (req.method === 'GET' && (url.pathname === '/index.html' || url.pathname === '/app.js' || url.pathname === '/login.js')) {
+  if (req.method === 'GET' && (url.pathname === '/index.html' || url.pathname === '/app.js')) {
     if (!session) return res.writeHead(302, { Location: '/login', 'Cache-Control': 'no-store' }).end();
     return serveFile(res, url.pathname.slice(1), true);
   }
+  if (req.method === 'GET' && url.pathname === '/login.js') return serveFile(res, 'login.js', true);
   if (req.method === 'GET' && (url.pathname === '/styles.css' || url.pathname.startsWith('/assets/'))) {
     return serveFile(res, url.pathname.slice(1));
   }
