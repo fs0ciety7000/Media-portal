@@ -1,0 +1,112 @@
+name: wizarr
+
+# Based on Wizarr's current official release Compose stack. The public-facing
+# nginx service is exposed only inside Coolify's network and should receive
+# the lock.phantomhex.cc domain in Coolify's Public Port configuration.
+services:
+  wizarr-nginx:
+    image: nginx:1.24.0-alpine
+    restart: on-failure
+    depends_on:
+      wizarr-frontend:
+        condition: service_started
+      wizarr-backend:
+        condition: service_started
+    expose:
+      - "5690"
+    environment:
+      PORT: "5690"
+      FRONT_URL: http://wizarr-frontend:5173
+      SERVER_URL: http://wizarr-backend:5001
+    volumes:
+      - ./nginx.conf.template:/etc/nginx/templates/wizarr.conf.template:ro
+
+  wizarr-frontend:
+    container_name: wizarr_frontend
+    image: ghcr.io/wizarrrrr/wizarr-frontend:${WIZARR_IMAGE_VERSION:-latest}
+    restart: always
+
+  wizarr-backend:
+    container_name: wizarr_backend
+    image: ghcr.io/wizarrrrr/wizarr-backend:${WIZARR_IMAGE_VERSION:-latest}
+    volumes:
+      - ${DB_DIR:-./data/database}:/usr/wizarr/data/database
+      - ${STORAGE_DIR:-./data/storage}:/usr/wizarr/data/storage
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      DB_TYPE: ${DB_TYPE:-postgres}
+      DB_DIR: ${DB_DIR:-./data/database}
+      STORAGE_DIR: ${STORAGE_DIR:-./data/storage}
+      WIZARR_IMAGE_VERSION: ${WIZARR_IMAGE_VERSION:-latest}
+      DB_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in Coolify before deployment}
+      DB_USERNAME: ${DB_USERNAME:-postgres}
+      DB_HOST: ${DB_HOST:-wizarr_postgres}
+      DB_NAME: ${DB_NAME:-wizarr}
+      REDIS_HOST: ${REDIS_HOST:-redis}
+      REDIS_PORT: ${REDIS_PORT:-6379}
+      MEMCACHED_HOST: ${MEMCACHED_HOST:-memcached}
+      MEMCACHED_PORT: ${MEMCACHED_PORT:-11211}
+      TZ: ${TZ:-Europe/Brussels}
+    depends_on:
+      - redis
+      - postgres
+    restart: always
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5001/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  redis:
+    container_name: wizarr_redis
+    image: docker.io/redis:latest
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping || exit 1"]
+    restart: always
+
+  postgres:
+    container_name: wizarr_postgres
+    image: docker.io/tensorchord/pgvecto-rs:pg14-v0.2.0
+    environment:
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in Coolify before deployment}
+      POSTGRES_USER: ${DB_USERNAME:-postgres}
+      POSTGRES_DB: ${DB_NAME:-wizarr}
+      POSTGRES_INITDB_ARGS: "--data-checksums"
+    volumes:
+      - ${DB_DIR:-./data/database}:/var/lib/postgresql/data
+    command: >-
+      postgres
+      -c shared_preload_libraries=vectors.so
+      -c 'search_path="$$user", public, vectors'
+      -c logging_collector=on
+      -c max_wal_size=2GB
+      -c shared_buffers=512MB
+      -c wal_compression=on
+    restart: always
+
+  memcached:
+    container_name: wizarr_memcached
+    image: memcached:alpine
+    restart: always
+    command:
+      - --conn-limit=1024
+      - --memory-limit=64
+      - --threads=4
+    healthcheck:
+      test: ["CMD-SHELL", "echo stats | nc 127.0.0.1 11211"]
+      interval: 20s
+      timeout: 1s
+      retries: 5
+
+  s3:
+    container_name: wizarr_s3
+    image: zenko/cloudserver:latest
+    restart: always
+    environment:
+      S3METADATAPATH: /var/lib/s3/meta
+      S3DATAPATH: /var/lib/s3/data
+      REMOTE_MANAGEMENT_DISABLE: "true"
+      HOST_NAMES: s3
+    volumes:
+      - ${STORAGE_DIR:-./data/storage}/meta:/var/lib/s3/meta
+      - ${STORAGE_DIR:-./data/storage}/data:/var/lib/s3/data

@@ -1,0 +1,146 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-18T21:49:33Z",
+  "title": "Design System: Phant0mhex Media Portal",
+  "extensions": {
+    "colorMeta": {
+      "primary": {
+        "role": "primary",
+        "displayName": "Phant0mhex Lime",
+        "canonical": "#d2ff62",
+        "tonalRamp": ["#142007", "#233710", "#385519", "#507322", "#6b932e", "#8bb13d", "#abc94d", "#d2ff62"]
+      },
+      "neutral-ink": {
+        "role": "neutral",
+        "displayName": "Chassis Ink",
+        "canonical": "#101312",
+        "tonalRamp": ["#090b0a", "#101312", "#171b19", "#1d2320", "#29302c", "#414a44", "#717b73", "#a3aaa2"]
+      },
+      "neutral-surface": {
+        "role": "neutral",
+        "displayName": "Panel Charcoal",
+        "canonical": "#171b19",
+        "tonalRamp": ["#0b0d0c", "#111412", "#171b19", "#212723", "#303832", "#4c554e", "#798178", "#a3aaa2"]
+      },
+      "neutral-raised": {
+        "role": "neutral",
+        "displayName": "Control Graphite",
+        "canonical": "#1d2320",
+        "tonalRamp": ["#0c0f0d", "#151a17", "#1d2320", "#282f2b", "#39413b", "#566059", "#818981", "#b1b6af"]
+      },
+      "neutral-line": {
+        "role": "neutral",
+        "displayName": "Structural Line",
+        "canonical": "#2b322e",
+        "tonalRamp": ["#111412", "#1a1f1c", "#2b322e", "#3c443f", "#535b55", "#6c746e", "#898f89", "#a3aaa2"]
+      },
+      "neutral-paper": {
+        "role": "neutral",
+        "displayName": "Projection Paper",
+        "canonical": "#f3f1e9",
+        "tonalRamp": ["#171814", "#2b2c27", "#484943", "#686a63", "#8a8b84", "#aaaba3", "#d1cfc5", "#f3f1e9"]
+      },
+      "neutral-muted": {
+        "role": "neutral",
+        "displayName": "Signal Gray",
+        "canonical": "#a3aaa2",
+        "tonalRamp": ["#1b1d1b", "#303430", "#484d48", "#656a64", "#7c827b", "#929891", "#a3aaa2", "#d9ddd6"]
+      },
+      "accent-cinema": {
+        "role": "secondary",
+        "displayName": "Cinema Amber",
+        "canonical": "#ff8b4b",
+        "tonalRamp": ["#31190d", "#542a14", "#7a3d1c", "#a45024", "#ce642e", "#e97b40", "#ff8b4b", "#ffc6a3"]
+      },
+      "accent-library": {
+        "role": "tertiary",
+        "displayName": "Library Blue",
+        "canonical": "#7ab8ff",
+        "tonalRamp": ["#10223a", "#1c3658", "#2e4e7a", "#41679d", "#5885c2", "#70a3e8", "#7ab8ff", "#c1ddff"]
+      }
+    },
+    "typographyMeta": {
+      "display": {"displayName": "Condensed Display", "purpose": "First-screen headline and service names."},
+      "body": {"displayName": "Readable Sans", "purpose": "Instructions and service descriptions."},
+      "label": {"displayName": "Equipment Label", "purpose": "Brief metadata only."}
+    },
+    "shadows": [],
+    "motion": [
+      {"name": "state-standard", "value": "160ms ease", "purpose": "Color and border changes on service and navigation states."},
+      {"name": "action-hover", "value": "170ms ease", "purpose": "Small lift on the primary action."}
+    ],
+    "breakpoints": [
+      {"name": "wide", "value": "1500px"},
+      {"name": "tablet", "value": "1050px"},
+      {"name": "narrow-tablet", "value": "790px"},
+      {"name": "mobile", "value": "720px"},
+      {"name": "compact", "value": "390px"}
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Portal Action",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The main action to discover media.",
+      "html": "<a class=\"ds-primary\" href=\"#\">Explorer le catalogue <svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M4.5 12h14m-6-6 6 6-6 6\"/></svg></a>",
+      "css": ".ds-primary{align-items:center;background:#d2ff62;color:#151910;display:inline-flex;font:700 12px 'DM Sans',sans-serif;gap:23px;justify-content:space-between;min-height:45px;padding:0 17px;text-decoration:none;transition:background 170ms ease,transform 170ms ease}.ds-primary:hover{background:#e0ff8b;transform:translateY(-2px)}.ds-primary:focus-visible{outline:2px solid #d2ff62;outline-offset:4px}.ds-primary svg{fill:none;height:16px;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:1.8;width:16px}"
+    },
+    {
+      "name": "Media Service Row",
+      "kind": "nav",
+      "refersTo": "service-row",
+      "description": "A direct destination row with a subtle hover surface.",
+      "html": "<a class=\"ds-service\" href=\"#\"><span class=\"ds-number\">01</span><span><strong>Jellyfin</strong><small>Votre bibliothèque en libre accès</small></span><svg class=\"ds-open\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M6 18 18 6M7 6h11v11\"/></svg></a>",
+      "css": ".ds-service{align-items:center;border-bottom:1px solid #2b322e;color:#f3f1e9;display:flex;gap:18px;min-height:77px;padding:0 8px;text-decoration:none;transition:background 160ms ease}.ds-service:hover{background:#1a201c}.ds-number{color:#a3aaa2;font:600 12px 'Barlow Condensed',sans-serif}.ds-open{color:#a3aaa2;fill:none;height:15px;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:1.7;width:15px}.ds-service strong{display:block;font:600 21px 'Barlow Condensed',sans-serif}.ds-service small{color:#a3aaa2;display:block;font:400 12px 'DM Sans',sans-serif}.ds-service:focus-visible{outline:2px solid #d2ff62;outline-offset:3px}"
+    },
+    {
+      "name": "Portal Search Field",
+      "kind": "input",
+      "refersTo": "search-field",
+      "description": "A compact search field for filtering the service list.",
+      "html": "<label class=\"ds-search-label\" for=\"ds-query\">Rechercher une plateforme</label><input class=\"ds-search\" id=\"ds-query\" type=\"search\" placeholder=\"Plex, Jellyfin…\">",
+      "css": ".ds-search-label{color:#a3aaa2;display:block;font:600 12px 'Barlow Condensed',sans-serif;margin-bottom:9px;text-transform:uppercase}.ds-search{background:#101312;border:0;border-bottom:1px solid #515a51;color:#f3f1e9;font:400 14px 'DM Sans',sans-serif;padding:8px 0;width:100%}.ds-search::placeholder{color:#788078}.ds-search:focus-visible{outline:2px solid #d2ff62;outline-offset:4px}"
+    },
+    {
+      "name": "Rail Navigation Item",
+      "kind": "nav",
+      "refersTo": "rail-link",
+      "description": "A square icon control whose active state uses a lime marker.",
+      "html": "<a class=\"ds-rail-link\" href=\"#\" aria-label=\"Home\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"m3.5 10.7 8.5-7 8.5 7v9.1a1.2 1.2 0 0 1-1.2 1.2h-5.1v-6.2h-4.4V21H4.7a1.2 1.2 0 0 1-1.2-1.2z\"/></svg></a>",
+      "css": ".ds-rail-link{align-items:center;color:#a3aaa2;display:grid;height:48px;justify-items:center;position:relative;width:48px}.ds-rail-link:hover{color:#d2ff62}.ds-rail-link:focus-visible{outline:2px solid #d2ff62;outline-offset:3px}.ds-rail-link svg{fill:none;height:21px;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:1.6;width:21px}"
+    },
+    {
+      "name": "Invitation Panel",
+      "kind": "custom",
+      "description": "A bordered lower-band callout for the private invitation portal.",
+      "html": "<section class=\"ds-invite\"><div><strong>Une place pour vous.</strong><p>Accéder au portail d’invitation et rejoindre l’antre.</p></div><a href=\"#\">Ouvrir Wizarr <svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M4.5 12h14m-6-6 6 6-6 6\"/></svg></a></section>",
+      "css": ".ds-invite{align-items:center;background:#171b19;border:1px solid #313a32;display:flex;gap:18px;justify-content:space-between;min-height:120px;padding:18px 20px}.ds-invite strong{color:#f3f1e9;display:block;font:600 23px 'Barlow Condensed',sans-serif}.ds-invite p{color:#a3aaa2;font:400 12px/1.5 'DM Sans',sans-serif;margin:5px 0 0}.ds-invite a{align-items:center;color:#d2ff62;display:inline-flex;font:600 12px 'DM Sans',sans-serif;gap:8px;text-decoration:none}.ds-invite a:focus-visible{outline:2px solid #d2ff62;outline-offset:4px}.ds-invite svg{fill:none;height:14px;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:1.8;width:14px}"
+    }
+  ],
+  "narrative": {
+    "northStar": "La console de projection privée",
+    "overview": "The interface treats a home media setup as a small cinema control room: a clear route to search, a recognizable list of playback services, and a compact invitation entry point. Its dark equipment-like surfaces frame warm, high-contrast type and a single electric lime control color. The hand-drawn ghost mark is the system's own recognizable signature.\n\nUse the visual language to make service choice immediate on a television-sized screen while staying compact on phones. The illustrative television frame is drawn in CSS and SVG; the portal does not depend on catalog artwork, status APIs, or remote image assets.",
+    "keyCharacteristics": [
+      "Near-black foundation with quiet tonal steps and fine structural borders.",
+      "Condensed display type beside readable sans-serif body copy.",
+      "Lime marks the main action and focus; service identity colors remain localized.",
+      "Square, equipment-like controls; no ornamental blur or floating glass."
+    ],
+    "rules": [
+      {"name": "The One-Signal Rule", "body": "Use lime for actions and active state. Keep amber and blue attached to their respective service identities.", "section": "colors"},
+      {"name": "The Readable-Control Rule", "body": "Keep action and instructional text at least 12px; reserve the 11px label size for brief metadata.", "section": "typography"}
+    ],
+    "dos": [
+      "Do keep the three media destinations direct, distinct, and keyboard accessible.",
+      "Do reserve lime for the main action, focus, and current state.",
+      "Do label service status only when a real health check is connected.",
+      "Do keep the theater illustration decorative and independent of remote media."
+    ],
+    "donts": [
+      "Don't add fake catalog titles, playback progress, health status, or usage metrics.",
+      "Don't add external artwork or blur-heavy effects to the portal's default view.",
+      "Don't animate row dimensions; keep hover feedback within color and transform."
+    ]
+  }
+}

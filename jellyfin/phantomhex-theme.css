@@ -1,0 +1,46 @@
+/* Phant0mhex · Jellyfin Web theme
+   Paste into Dashboard > Branding > Custom CSS. Jellyfin mobile/TV native apps may not use Jellyfin Web CSS. */
+:root {
+  --phx-ink: #101312;
+  --phx-surface: #171b19;
+  --phx-panel: #1d2320;
+  --phx-border: #343c36;
+  --phx-paper: #f3f1e9;
+  --phx-muted: #a3aaa2;
+  --phx-acid: #d2ff62;
+  --phx-orange: #ff8b4b;
+  --phx-blue: #7ab8ff;
+  --primary-color: var(--phx-acid);
+  --secondary-color: var(--phx-acid);
+  --theme-primary-color: var(--phx-acid);
+  --theme-primary-color-hover: #e0ff8b;
+  --theme-primary-color-focus: #d2ff62;
+}
+
+html, body { background: var(--phx-ink) !important; color: var(--phx-paper); }
+.backgroundContainer, .backgroundContainer.withBackdrop { background: var(--phx-ink) !important; }
+.skinHeader { background: rgba(13, 16, 15, .96) !important; border-bottom: 1px solid #2b322e; }
+.skinHeader.semiTransparent, .skinHeader.noHomeButtonHeader { background: rgba(13, 16, 15, .92) !important; }
+.headerButton, .paper-icon-button-light, .emby-tab-button { color: #b3bbb1 !important; }
+.headerButton:hover, .paper-icon-button-light:hover, .emby-tab-button:hover { color: var(--phx-acid) !important; }
+.emby-tab-button-active { color: var(--phx-acid) !important; border-color: var(--phx-acid) !important; }
+.emby-button, .raised, .button-submit, .emby-button-show-focus:focus { background: var(--phx-acid) !important; border-color: var(--phx-acid) !important; color: #151910 !important; }
+.emby-button:hover, .raised:hover { background: #e0ff8b !important; }
+.emby-button-tv, .emby-button:not(.raised):not(.button-submit) { border-color: #434c43 !important; }
+.cardBox, .cardContent, .paperList, .listItem, .verticalSection .itemsContainer { border-color: var(--phx-border); }
+.cardBox:not(.visualCardBox) { background: var(--phx-surface); }
+.cardText, .cardText-secondary, .listItemBodyText, .sectionTitle, .detailSectionContent { color: var(--phx-paper) !important; }
+.secondary, .fieldDescription, .cardText-secondary, .itemMiscInfo, .listItemBodyText.secondary { color: var(--phx-muted) !important; }
+.innerCardFooter, .paperList, .formDialogHeader, .dialog, .background-theme-a, .background-theme-b { background: var(--phx-surface) !important; }
+.emby-input, .emby-textarea, .emby-select, .selectContainer select { background: #121614 !important; border: 1px solid #424b43 !important; color: var(--phx-paper) !important; }
+.emby-input:focus, .emby-textarea:focus, .emby-select:focus { border-color: var(--phx-acid) !important; }
+.emby-checkbox:checked + span + .checkboxOutline, .emby-checkbox:checked + .checkboxOutline { background: var(--phx-acid) !important; border-color: var(--phx-acid) !important; }
+.mdl-slider-background-flex > .progress { background-color: var(--phx-acid) !important; }
+.itemProgressBarForeground, .playedIndicator { background: var(--phx-acid) !important; }
+.nowPlayingBar, .nowPlayingBarTop, .nowPlayingBarPositionContainer { background: #141816 !important; }
+.countIndicator, .fullSyncIndicator, .mediaSourceIndicator { background: var(--phx-acid) !important; color: #151910 !important; }
+.emby-scroller { scrollbar-color: #596158 var(--phx-ink); }
+:focus-visible { outline: 2px solid var(--phx-acid) !important; outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; scroll-behavior: auto !important; transition-duration: .01ms !important; }
+}
